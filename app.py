@@ -26,11 +26,18 @@ pid = questionary.text('playlist id').ask()
 p = Playlist(f'{_base_url}{pid}')
 print(f'{p.title}: {p.length} videos')
 is_getting_highest = questionary.confirm('Getting highest quality?').ask()
+required_word = questionary.text('Included word:').ask()
+fetch_list = p.videos
+if required_word:
+    print(f'including word: {required_word}')
+    fetch_list = [v for v in p.videos if required_word in v.title]
+    for i in fetch_list:
+        print(i.title)
 
 if is_getting_highest:
-    for v in p.videos:
+    for v in fetch_list:
         get_highest_quality(v)
 else:
-    for v in p.videos:
+    for v in fetch_list:
         # download highest progressive videos
         v.streams.get_highest_resolution().download()
